@@ -43,6 +43,16 @@ const gameSchema = new mongoose.Schema({
     type: Number,
     default: 40
   },
+  // Current sequence number for action ordering
+  sequence: {
+    type: Number,
+    default: 0
+  },
+  // Version for optimistic concurrency control
+  version: {
+    type: Number,
+    default: 0
+  },
   createdAt: {
     type: Date,
     default: Date.now

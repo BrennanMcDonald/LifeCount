@@ -396,7 +396,7 @@ const startHold = (playerIndex, amount, type, fromPlayerIndex = null) => {
     } else if (type === 'cmd' && fromPlayerIndex !== null) {
       changeCommanderDamage(playerIndex, fromPlayerIndex, holdAmount)
     }
-    holdInterval = setTimeout(repeat, 1000)
+    holdInterval = setTimeout(repeat, 500)
   }
   holdInterval = setTimeout(repeat, 500) // Initial delay before hold kicks in
 }
@@ -630,14 +630,15 @@ html, body, #__nuxt {
 }
 
 .life-display {
-  min-width: clamp(80px, 25vw, 150px);
+  width: clamp(100px, 28vw, 180px);
+  flex-shrink: 0;
   text-align: center;
   position: relative;
 }
 
 .life-total {
   font-family: 'Orbitron', monospace;
-  font-size: clamp(3rem, 12vw, 6rem);
+  font-size: clamp(2rem, 10vw, 4rem);
   font-weight: 900;
   color: #fff;
   text-shadow: 

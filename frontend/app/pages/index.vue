@@ -87,7 +87,7 @@
 
 <script setup>
 const router = useRouter()
-const { createGame, joinGame } = useGameSocket()
+const { createGame, joinGame, getApiUrl } = useGameSocket()
 
 const playerCount = ref(4)
 const startingLife = ref(40)
@@ -147,12 +147,14 @@ const handleJoinGamePlayer = async () => {
 
 .lobby {
   min-height: 100vh;
+  min-height: 100dvh;
   display: flex;
   align-items: center;
   justify-content: center;
   background: linear-gradient(135deg, #0a0a0a 0%, #1a1a2e 50%, #0a0a0a 100%);
   position: relative;
-  overflow: hidden;
+  overflow-y: auto;
+  overflow-x: hidden;
   padding: 2rem;
 }
 

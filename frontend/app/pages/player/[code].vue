@@ -209,7 +209,7 @@ const startHold = (amount, type) => {
     if (type === 'life') {
       changeLife(holdAmount)
     }
-    holdInterval = setTimeout(repeat, 1000)
+    holdInterval = setTimeout(repeat, 500)
   }
   holdInterval = setTimeout(repeat, 500) // Initial delay before hold kicks in
 }
@@ -500,6 +500,8 @@ onUnmounted(() => {
 }
 
 .life-display {
+  width: clamp(140px, 40vw, 250px);
+  flex-shrink: 0;
   text-align: center;
   position: relative;
 }

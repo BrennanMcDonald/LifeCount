@@ -23,7 +23,7 @@ const currentGameCode = ref<string | null>(null)
 
 export function useGameSocket() {
   const config = useRuntimeConfig()
-  const apiUrl = config.public.apiUrl || 'http://localhost:3001'
+  const apiUrl = config.public.apiUrl || '192.168.1.10:3001'
 
   const connect = () => {
     if (socket.value?.connected) return
@@ -50,6 +50,10 @@ export function useGameSocket() {
     socket.value.on('gameUpdate', (updatedGame: Game) => {
       game.value = updatedGame
     })
+  }
+
+  const getApiUrl = () => {
+    return apiUrl;
   }
 
   const disconnect = () => {
@@ -192,7 +196,8 @@ export function useGameSocket() {
     updateCommanderDamage,
     updatePlayer,
     updatePlayerName,
-    resetGame
+    resetGame,
+    getApiUrl
   }
 }
 

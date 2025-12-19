@@ -11,7 +11,7 @@ export default defineNuxtConfig({
   runtimeConfig: {
     public: {
       // API URL - set via NUXT_PUBLIC_API_URL env var
-      apiUrl: process.env.NUXT_PUBLIC_API_URL || 'http://localhost:3001'
+      apiUrl: process.env.NUXT_PUBLIC_API_URL || 'http://192.168.1.10:3001'
     }
   },
 
@@ -31,7 +31,7 @@ export default defineNuxtConfig({
         { name: 'apple-mobile-web-app-status-bar-style', content: 'black-translucent' }
       ],
       link: [
-        { rel: 'icon', type: 'image/x-icon', href: '/favicon.ico' }
+        { rel: 'icon', type: 'image/x-icon', href: 'favicon.ico' }
       ]
     }
   },
