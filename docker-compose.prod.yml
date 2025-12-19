@@ -49,14 +49,14 @@ services:
       context: ./frontend
       dockerfile: Dockerfile
       args:
-        - NUXT_PUBLIC_API_URL=${NUXT_PUBLIC_API_URL}
+        - NUXT_PUBLIC_API_URL=https://life-api.brmc.xyz/
     expose:
       - "3000"
     environment:
       - NODE_ENV=production
-      - VIRTUAL_HOST=${FRONTEND_HOST}
+      - VIRTUAL_HOST=lifecount.brmc.xyz
       - VIRTUAL_PORT=3000
-      - LETSENCRYPT_HOST=${FRONTEND_HOST}
+      - LETSENCRYPT_HOST=lifecount.brmc.xyz
     depends_on:
       - api
     restart: unless-stopped
@@ -73,10 +73,10 @@ services:
       - NODE_ENV=production
       - PORT=3000
       - MONGODB_URI=${MONGODB_URI:-mongodb://mongo:27017/lifecount}
-      - FRONTEND_URL=${FRONTEND_URL}
-      - VIRTUAL_HOST=${API_HOST}
+      - FRONTEND_URL=https://lifecount.brmc.xyz/
+      - VIRTUAL_HOST=life-api.brmc.xyz
       - VIRTUAL_PORT=3000
-      - LETSENCRYPT_HOST=${API_HOST}
+      - LETSENCRYPT_HOST=life-api.brmc.xyz
     depends_on:
       mongo:
         condition: service_healthy
