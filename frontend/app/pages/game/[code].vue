@@ -389,17 +389,16 @@ const closeQRModal = () => {
 
 const startHold = (playerIndex, amount, type, fromPlayerIndex = null) => {
   stopHold()
-  let delay = 300
+  const holdAmount = amount * 10 // +10 or -10 per second
   const repeat = () => {
     if (type === 'life') {
-      changeLife(playerIndex, amount)
+      changeLife(playerIndex, holdAmount)
     } else if (type === 'cmd' && fromPlayerIndex !== null) {
-      changeCommanderDamage(playerIndex, fromPlayerIndex, amount)
+      changeCommanderDamage(playerIndex, fromPlayerIndex, holdAmount)
     }
-    delay = Math.max(50, delay * 0.8)
-    holdInterval = setTimeout(repeat, delay)
+    holdInterval = setTimeout(repeat, 1000)
   }
-  holdInterval = setTimeout(repeat, 500)
+  holdInterval = setTimeout(repeat, 500) // Initial delay before hold kicks in
 }
 
 const stopHold = () => {
@@ -439,6 +438,32 @@ const enterFullscreen = async () => {
   }
 }
 
+// Wake Lock to prevent screen from sleeping
+let wakeLock = null
+
+const requestWakeLock = async () => {
+  if ('wakeLock' in navigator) {
+    try {
+      wakeLock = await navigator.wakeLock.request('screen')
+    } catch (error) {
+      console.log('Wake Lock request failed:', error.message)
+    }
+  }
+}
+
+const releaseWakeLock = async () => {
+  if (wakeLock) {
+    await wakeLock.release()
+    wakeLock = null
+  }
+}
+
+const handleVisibilityChange = () => {
+  if (document.visibilityState === 'visible') {
+    requestWakeLock()
+  }
+}
+
 // Join game on mount
 onMounted(async () => {
   try {
@@ -448,6 +473,10 @@ onMounted(async () => {
     if (isMobile() && !isFullscreen()) {
       showFullscreenPrompt.value = true
     }
+    
+    // Request wake lock to prevent screen sleep
+    await requestWakeLock()
+    document.addEventListener('visibilitychange', handleVisibilityChange)
   } catch (error) {
     console.error('Failed to join game:', error)
     router.push('/')
@@ -457,6 +486,8 @@ onMounted(async () => {
 // Leave game on unmount
 onUnmounted(() => {
   leaveGame()
+  releaseWakeLock()
+  document.removeEventListener('visibilitychange', handleVisibilityChange)
 })
 </script>
 
