@@ -1,0 +1,18 @@
+{
+  "name": "lifecount",
+  "version": "1.0.0",
+  "description": "MTG Commander Life Counter with real-time sync",
+  "private": true,
+  "scripts": {
+    "dev": "docker-compose up",
+    "dev:build": "docker-compose up --build",
+    "prod": "docker-compose -f docker-compose.yml -f docker-compose.prod.yml up -d",
+    "prod:build": "docker-compose -f docker-compose.yml -f docker-compose.prod.yml up -d --build",
+    "stop": "docker-compose down",
+    "logs": "docker-compose logs -f",
+    "logs:api": "docker-compose logs -f api",
+    "logs:frontend": "docker-compose logs -f frontend",
+    "clean": "docker-compose down -v"
+  }
+}
+
