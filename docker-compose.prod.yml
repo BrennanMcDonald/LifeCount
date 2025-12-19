@@ -49,7 +49,7 @@ services:
       context: ./frontend
       dockerfile: Dockerfile
       args:
-        - NUXT_PUBLIC_API_URL=https://life-api.brmc.xyz/
+        - NUXT_PUBLIC_API_URL=https://life-api.brmc.xyz
     expose:
       - "3000"
     environment:

@@ -37,8 +37,9 @@
           @mousedown="startHold(-1, 'life')"
           @mouseup="stopHold"
           @mouseleave="stopHold"
-          @touchstart.prevent="startHold(-1, 'life')"
-          @touchend.prevent="stopHold"
+          @touchstart="startHold(-1, 'life')"
+          @touchend="stopHold"
+          @touchcancel="stopHold"
         >
           <span class="btn-icon">−</span>
         </button>
@@ -60,8 +61,9 @@
           @mousedown="startHold(1, 'life')"
           @mouseup="stopHold"
           @mouseleave="stopHold"
-          @touchstart.prevent="startHold(1, 'life')"
-          @touchend.prevent="stopHold"
+          @touchstart="startHold(1, 'life')"
+          @touchend="stopHold"
+          @touchcancel="stopHold"
         >
           <span class="btn-icon">+</span>
         </button>
