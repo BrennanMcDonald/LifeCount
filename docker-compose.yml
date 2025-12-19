@@ -1,16 +1,19 @@
 version: '3.8'
 
+# Development Docker Compose (without SSL)
+# Use this for local development
+
 services:
   frontend:
     build:
       context: ./frontend
       dockerfile: Dockerfile
       args:
-        - NUXT_PUBLIC_API_URL=${NUXT_PUBLIC_API_URL:-http://localhost:3001}
+        - NUXT_PUBLIC_API_URL=http://localhost:3001
     ports:
-      - "${FRONTEND_PORT:-3000}:3000"
+      - "3000:3000"
     environment:
-      - NODE_ENV=production
+      - NODE_ENV=development
     depends_on:
       - api
     restart: unless-stopped
@@ -22,12 +25,12 @@ services:
       context: ./api
       dockerfile: Dockerfile
     ports:
-      - "${API_PORT:-3001}:3001"
+      - "3001:3001"
     environment:
-      - NODE_ENV=production
+      - NODE_ENV=development
       - PORT=3001
-      - MONGODB_URI=${MONGODB_URI:-mongodb://mongo:27017/lifecount}
-      - FRONTEND_URL=${FRONTEND_URL:-http://localhost:3000}
+      - MONGODB_URI=mongodb://mongo:27017/lifecount
+      - FRONTEND_URL=http://localhost:3000
     depends_on:
       mongo:
         condition: service_healthy
@@ -38,7 +41,7 @@ services:
   mongo:
     image: mongo:7
     ports:
-      - "${MONGO_PORT:-27017}:27017"
+      - "27017:27017"
     volumes:
       - mongo-data:/data/db
     environment:
