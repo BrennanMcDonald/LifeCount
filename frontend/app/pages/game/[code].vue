@@ -17,8 +17,9 @@
             @mousedown="startHold(index, -1, 'life')"
             @mouseup="stopHold"
             @mouseleave="stopHold"
-            @touchstart.prevent="startHold(index, -1, 'life')"
-            @touchend.prevent="stopHold"
+            @touchstart="startHold(index, -1, 'life')"
+            @touchend="stopHold"
+            @touchcancel="stopHold"
           >
             <span class="btn-icon">−</span>
           </button>
@@ -38,8 +39,9 @@
             @mousedown="startHold(index, 1, 'life')"
             @mouseup="stopHold"
             @mouseleave="stopHold"
-            @touchstart.prevent="startHold(index, 1, 'life')"
-            @touchend.prevent="stopHold"
+            @touchstart="startHold(index, 1, 'life')"
+            @touchend="stopHold"
+            @touchcancel="stopHold"
           >
             <span class="btn-icon">+</span>
           </button>
@@ -137,8 +139,9 @@
                     @mousedown="startHold(commanderModal.playerIndex, -1, 'cmd', sourceIndex)"
                     @mouseup="stopHold"
                     @mouseleave="stopHold"
-                    @touchstart.prevent="startHold(commanderModal.playerIndex, -1, 'cmd', sourceIndex)"
-                    @touchend.prevent="stopHold"
+                    @touchstart="startHold(commanderModal.playerIndex, -1, 'cmd', sourceIndex)"
+                    @touchend="stopHold"
+                    @touchcancel="stopHold"
                   >−</button>
                   
                   <div 
@@ -154,8 +157,9 @@
                     @mousedown="startHold(commanderModal.playerIndex, 1, 'cmd', sourceIndex)"
                     @mouseup="stopHold"
                     @mouseleave="stopHold"
-                    @touchstart.prevent="startHold(commanderModal.playerIndex, 1, 'cmd', sourceIndex)"
-                    @touchend.prevent="stopHold"
+                    @touchstart="startHold(commanderModal.playerIndex, 1, 'cmd', sourceIndex)"
+                    @touchend="stopHold"
+                    @touchcancel="stopHold"
                   >+</button>
                 </div>
               </div>
@@ -229,6 +233,18 @@
       <span class="status-dot"></span>
       <span class="status-text">{{ connected ? 'Synced' : 'Offline' }}</span>
     </div>
+
+    <!-- Fullscreen Prompt (Mobile) -->
+    <div 
+      v-if="showFullscreenPrompt" 
+      class="fullscreen-prompt"
+      @click="enterFullscreen"
+    >
+      <div class="prompt-content">
+        <UIcon name="i-heroicons-arrows-pointing-out" class="prompt-icon" />
+        <span>Tap to enter fullscreen</span>
+      </div>
+    </div>
   </div>
   
   <!-- Loading State -->
@@ -269,6 +285,7 @@ const lastChanges = ref([0, 0, 0, 0])
 const commanderModal = ref({ open: false, playerIndex: 0 })
 const qrModal = ref({ open: false })
 const qrCode = ref('')
+const showFullscreenPrompt = ref(false)
 const playerUrl = computed(() => {
   if (typeof window === 'undefined') return ''
   return `${window.location.origin}/player/${gameCode}`
@@ -398,10 +415,39 @@ const handleReset = async () => {
   closeCommanderModal()
 }
 
+const isMobile = () => {
+  if (typeof window === 'undefined') return false
+  return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) ||
+    (navigator.maxTouchPoints && navigator.maxTouchPoints > 2)
+}
+
+const isFullscreen = () => {
+  return !!(document.fullscreenElement || document.webkitFullscreenElement)
+}
+
+const enterFullscreen = async () => {
+  showFullscreenPrompt.value = false
+  try {
+    const elem = document.documentElement
+    if (elem.requestFullscreen) {
+      await elem.requestFullscreen()
+    } else if (elem.webkitRequestFullscreen) {
+      await elem.webkitRequestFullscreen()
+    }
+  } catch (error) {
+    console.log('Fullscreen not supported or denied')
+  }
+}
+
 // Join game on mount
 onMounted(async () => {
   try {
     await joinGame(gameCode)
+    
+    // Show fullscreen prompt on mobile if not already fullscreen
+    if (isMobile() && !isFullscreen()) {
+      showFullscreenPrompt.value = true
+    }
   } catch (error) {
     console.error('Failed to join game:', error)
     router.push('/')
@@ -1132,5 +1178,41 @@ html, body, #__nuxt {
 /* 2 Player Grid Positions */
 .players-2 .player-0 { grid-area: 1 / 1 / 2 / 2; }
 .players-2 .player-1 { grid-area: 2 / 1 / 3 / 2; }
+
+/* Fullscreen Prompt */
+.fullscreen-prompt {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.9);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 2000;
+  cursor: pointer;
+  backdrop-filter: blur(8px);
+}
+
+.prompt-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+  color: #fff;
+  font-family: 'Orbitron', monospace;
+  font-size: 1.1rem;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  animation: promptPulse 2s ease-in-out infinite;
+}
+
+.prompt-icon {
+  font-size: 3rem;
+  color: #0ea5e9;
+}
+
+@keyframes promptPulse {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.7; transform: scale(0.98); }
+}
 </style>
 
