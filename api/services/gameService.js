@@ -19,8 +19,8 @@ function applyAction(game, action) {
       const { fromPlayerIndex, delta } = action.payload;
       const newDamage = players[action.playerIndex].commanderDamage[fromPlayerIndex] + delta;
       players[action.playerIndex].commanderDamage[fromPlayerIndex] = Math.max(0, newDamage);
-      // Commander damage also affects life
-      players[action.playerIndex].life -= delta;
+      // Note: Life change is handled separately via CHANGE_LIFE action
+      // The frontend sends both the life change and commander damage change
       break;
     }
     

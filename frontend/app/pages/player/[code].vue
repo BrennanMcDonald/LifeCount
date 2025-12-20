@@ -25,6 +25,41 @@
 
   <!-- Player Control Screen -->
   <div class="player-page" :class="`color-${player?.color}`" v-else-if="game && player">
+    <!-- Pull Tab for All Players View -->
+    <button class="pull-tab" @click="showAllPlayers = !showAllPlayers">
+      <div class="pull-tab-indicator"></div>
+      <span class="pull-tab-label">{{ showAllPlayers ? 'Hide' : 'All Players' }}</span>
+    </button>
+
+    <!-- All Players Overlay -->
+    <div class="all-players-overlay" :class="{ visible: showAllPlayers }">
+      <div class="all-players-grid" :class="`players-${game.players.length}`">
+        <div 
+          v-for="(p, index) in game.players" 
+          :key="index"
+          class="mini-player-zone"
+          :class="[`color-${p.color}`, { 'is-self': index === selectedPlayerIndex }]"
+        >
+          <div class="mini-player-name">{{ p.name }}</div>
+          <div class="mini-life-total" :class="{ 'low-life': p.life <= 10, 'critical': p.life <= 5 }">
+            {{ p.life }}
+          </div>
+          <div class="mini-cmd-grid">
+            <div 
+              v-for="(dmg, dmgIndex) in p.commanderDamage" 
+              :key="dmgIndex"
+              class="mini-cmd-cell"
+              :class="{ 'has-damage': dmg > 0 }"
+              :style="{ '--dot-color': playerColors[game.players[dmgIndex]?.color] }"
+            >
+              <span class="mini-cmd-dot"></span>
+              <span class="mini-cmd-value">{{ dmg }}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
     <div class="player-content">
       <div class="player-header">
         <span class="player-name">{{ player.name }}</span>
@@ -152,6 +187,7 @@ const selectedPlayerIndex = ref(null)
 const selectedPlayer = computed(() => selectedPlayerIndex.value !== null)
 const player = computed(() => selectedPlayerIndex.value !== null ? game.value?.players[selectedPlayerIndex.value] : null)
 const lastChange = ref(0)
+const showAllPlayers = ref(false)
 
 let holdInterval = null
 let changeTimeout = null
@@ -710,6 +746,183 @@ onUnmounted(() => {
 @keyframes spin {
   from { transform: rotate(0deg); }
   to { transform: rotate(360deg); }
+}
+
+/* Pull Tab */
+.pull-tab {
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 200;
+  background: rgba(0, 0, 0, 0.8);
+  border: 1px solid #333;
+  border-top: none;
+  border-radius: 0 0 1rem 1rem;
+  padding: 0.5rem 1.5rem 0.75rem;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.25rem;
+  transition: all 0.2s ease;
+}
+
+.pull-tab:hover {
+  background: rgba(0, 0, 0, 0.9);
+  border-color: #555;
+}
+
+.pull-tab-indicator {
+  width: 40px;
+  height: 4px;
+  background: #555;
+  border-radius: 2px;
+}
+
+.pull-tab-label {
+  font-family: 'Orbitron', monospace;
+  font-size: 0.65rem;
+  color: #888;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+}
+
+/* All Players Overlay */
+.all-players-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 150;
+  background: #0a0a0a;
+  transform: translateY(-100%);
+  transition: transform 0.3s ease;
+  border-bottom: 2px solid #333;
+  padding: 1rem;
+  padding-top: 3.5rem;
+}
+
+.all-players-overlay.visible {
+  transform: translateY(0);
+}
+
+.all-players-grid {
+  display: grid;
+  gap: 0.5rem;
+  width: 100%;
+  max-width: 500px;
+  margin: 0 auto;
+}
+
+.all-players-grid.players-2 {
+  grid-template-columns: 1fr;
+}
+
+.all-players-grid.players-3,
+.all-players-grid.players-4 {
+  grid-template-columns: 1fr 1fr;
+}
+
+.mini-player-zone {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 0.75rem;
+  border-radius: 0.75rem;
+  gap: 0.25rem;
+}
+
+.mini-player-zone.is-self {
+  outline: 2px solid var(--accent);
+  outline-offset: -2px;
+}
+
+.mini-player-zone.color-crimson {
+  background: linear-gradient(145deg, #1a0505 0%, #2d0a0a 100%);
+  --accent: #dc2626;
+}
+
+.mini-player-zone.color-ocean {
+  background: linear-gradient(145deg, #030a14 0%, #051525 100%);
+  --accent: #0ea5e9;
+}
+
+.mini-player-zone.color-forest {
+  background: linear-gradient(145deg, #031a0a 0%, #052d12 100%);
+  --accent: #22c55e;
+}
+
+.mini-player-zone.color-amber {
+  background: linear-gradient(145deg, #1a1005 0%, #2d1a08 100%);
+  --accent: #f59e0b;
+}
+
+.mini-player-name {
+  font-family: 'Orbitron', monospace;
+  font-size: 0.65rem;
+  color: var(--accent);
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  opacity: 0.8;
+}
+
+.mini-life-total {
+  font-family: 'Orbitron', monospace;
+  font-size: 2rem;
+  font-weight: 900;
+  color: #fff;
+  line-height: 1;
+}
+
+.mini-life-total.low-life {
+  color: #fbbf24;
+}
+
+.mini-life-total.critical {
+  color: #ef4444;
+  animation: pulse 1s ease-in-out infinite;
+}
+
+.mini-cmd-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 2px;
+  margin-top: 0.25rem;
+}
+
+.mini-cmd-cell {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+  padding: 0.15rem 0.3rem;
+  background: rgba(0, 0, 0, 0.3);
+  border-radius: 3px;
+}
+
+.mini-cmd-cell.has-damage {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.mini-cmd-dot {
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: var(--dot-color);
+}
+
+.mini-cmd-value {
+  font-family: 'Orbitron', monospace;
+  font-size: 0.55rem;
+  font-weight: bold;
+  color: rgba(255, 255, 255, 0.7);
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.6; }
 }
 </style>
 
